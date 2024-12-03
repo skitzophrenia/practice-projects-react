@@ -10,8 +10,7 @@ export async function fetchAvailableMeals() {
 }
 
 export async function submitOrder(order) {
-  console.log(order);
- /*const response = await fetch("http://localhost:3000/orders", {
+ const response = await fetch("http://localhost:3000/orders", {
     method: "POST",
     body: JSON.stringify({ order: order }),
     headers: {
@@ -28,5 +27,5 @@ export async function submitOrder(order) {
     throw new Error("Failed to update places");
   }
 
-  return resData.message;*/
+  return resData.message;
 }

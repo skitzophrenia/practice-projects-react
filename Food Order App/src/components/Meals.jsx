@@ -4,9 +4,10 @@ import { useFetch } from "../hooks/useFetch.js";
 import { fetchAvailableMeals } from "../https.js";
 export default function Meals() {
   const { addItemToCart } = useContext(CartContext);
-  const { fetchedData: initialMeals } = useFetch(fetchAvailableMeals, []);
+  const { fetchedData: initialMeals, isFetching } = useFetch(fetchAvailableMeals, []);
   return (
     <div id="meals">
+      {isFetching && "Loading Meals"}
       {initialMeals.map((meal) => (
         <div className="meal-item" key={meal.id}>
           <img src={`http://localhost:3000/${meal.image}`} />

@@ -1,4 +1,4 @@
-import { createContext, useReducer } from "react";
+import { createContext, useReducer, useState } from "react";
 import { useFetch } from "../hooks/useFetch.js";
 import { fetchAvailableMeals } from "../https.js";
 
@@ -8,6 +8,7 @@ export const CartContext = createContext({
   addItemToCart: () => {},
   updateItemQuantity: () => {},
   addOrder: () => {},
+  clearState: () => {},
 });
 
 function shoppingCartReducer(state, action) {
@@ -67,6 +68,13 @@ function shoppingCartReducer(state, action) {
     };
   }
 
+  if (action.type === "CLEAR") {
+    return {
+      ...state,
+      items: [],
+    };
+  }
+
   return state;
 }
 
@@ -78,9 +86,8 @@ export function CartContextProvider({ children }) {
     }
   );
 
-  const [orderState, setOrderState] = useState({});
-
   const { fetchedData: initialMeals } = useFetch(fetchAvailableMeals, []);
+  const [orderState, setOrderState] = useState({});
 
   function handleAddItemToCart(selectedMeal) {
     shoppingCartDispatch({
@@ -100,7 +107,19 @@ export function CartContextProvider({ children }) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const data = Object.fromEntries(formData.entries());
-    setOrderState((prevOrder) => ({ ...prevOrder, items: items, customer: data }));
+    setOrderState((prevOrder) => ({
+      ...prevOrder,
+      items: items,
+      customer: data,
+    }));
+  }
+
+  function handleClearState() {
+    setOrderState({});
+    shoppingCartDispatch({
+      type: "CLEAR",
+      payload: { initialCartItems: initialMeals },
+    });
   }
 
   const ctxValue = {
@@ -109,6 +128,7 @@ export function CartContextProvider({ children }) {
     addOrder: handleOrder,
     addItemToCart: handleAddItemToCart,
     updateItemQuantity: handleUpdateCartItemQuantity,
+    clearState: handleClearState,
   };
 
   return (
